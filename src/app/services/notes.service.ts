@@ -29,20 +29,31 @@ export class NotesService {
       allNotes: []
     }
     this.notesSubject.next(emptyState);
+    localStorage.clear();
   }
 
   getNotes() {
     return this.notesSubject.value.allNotes;
   }
 
+  loadPreviousState(data) {
+    const changedVal = {
+      ...this.notesSubject.value,
+      currentNode: data.currentNode,
+      allNotes: data.allNotes,
+    }
+    this.notesSubject.next(changedVal);
+  }
+
   getCurrentNode() {
-    return this.notesSubject.value.currentNode ?
+    let node = this.notesSubject.value.currentNode ?
       this.notesSubject.value.currentNode : {
         id: 0,
         title: '',
         description: '',
         time: new Date()
       };
+    return node;
   }
 
   updateCurrentNode(id: number) {
@@ -50,6 +61,7 @@ export class NotesService {
       ...this.notesSubject.value,
       currentNode: this.getNotes().sort().filter(each => each.id === id)[0]
     };
+    localStorage.setItem('activeNote', JSON.stringify(cloneState.currentNode));
     this.notesSubject.next(cloneState);
   }
 
@@ -62,7 +74,8 @@ export class NotesService {
   }
 
   updateNote(note: Note, value: string) {
-    const removedNote = this.getNotes().filter(each => each.id === note.id)[0];
+    let removedNote = this.getNotes().filter(each => each.id === note.id)[0];
+    removedNote = removedNote ? removedNote : note;
     removedNote[value] = note[value];
     const removedList = {
       ...this.notesSubject.value,
@@ -101,18 +114,13 @@ export class NotesService {
     return this.notesSubject.value.sidebarStatus;
   }
 
-  changeSidebarStatus() {
+  changeSidebarStatus(val: string) {
     const filterState = {
       ...this.notesSubject.value,
-      sidebarStatus: this.notesSubject.value.sidebarStatus === 'close' ?
-        'open' : 'close'
+      sidebarStatus: val
     }
     this.notesSubject.next(filterState);
   }
 
-  constructor() {
-    if (localStorage.getItem('notes-list')) {
-
-    }
-  }
+  constructor() {}
 }

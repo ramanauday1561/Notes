@@ -42,6 +42,7 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
   sidebarStatus = 'open';
   searchText: String;
   private innerWidth: number;
+  private firstTime = true;
 
   @ViewChild('titleInput') titleInput: ElementRef;
   @ViewChild('descInput') descInput: ElementRef;
@@ -52,7 +53,7 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
   onResize(event) {
     this.innerWidth = window.innerWidth;
     if (window.innerWidth < 780) {
-      this.sidebarStatus = 'close';
+      this.notesService.changeSidebarStatus('close');
     }
   }
 
@@ -61,20 +62,16 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
     if (window.innerWidth < 780) {
-      this.sidebarStatus = 'close';
+      this.notesService.changeSidebarStatus('close');
     }
     this.notesService.getState().subscribe(res => {
       this.allNotes = res.allNotes;
       this.allNotesClone = [...res.allNotes];
       this.sidebarStatus = res.sidebarStatus;
-      this.selectedNote = this.notesService.getCurrentNode();
-      this.title = this.selectedNote.title;
-      this.description = this.selectedNote.description;
+      this.assignActiveState();
       saveNotesToStore(this.allNotes);
     });
-    if (localStorage.getItem('NotesList')) {
-      this.allNotes = JSON.parse(localStorage.getItem('NotesList'));
-    }
+    this.loadPreviousData();
   }
 
   addNewNote() {
@@ -109,7 +106,8 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
   }
 
   toggleSidebar() {
-    this.notesService.changeSidebarStatus();
+    const toggleVal = this.sidebarStatus === 'open' ? 'close' : 'open';
+    this.notesService.changeSidebarStatus(toggleVal);
   }
 
   ngAfterViewInit(): void {
@@ -150,5 +148,27 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
     if (this.innerWidth < 480) {
       this.hideIcon = false;
     }
+  }
+
+  private loadPreviousData() {
+    if (localStorage.getItem('NotesList')) {
+      this.allNotes = JSON.parse(localStorage.getItem('NotesList'));
+      const activeNote = JSON.parse(localStorage.getItem('activeNote'));
+      this.title = activeNote.title;
+      this.description = activeNote.description;
+      this.notesService.loadPreviousState({
+        currentNode: activeNote,
+        allNotes: this.allNotes
+      });
+    }
+  }
+
+  private assignActiveState() {
+    if (!this.firstTime) {
+      this.selectedNote = this.notesService.getCurrentNode();
+      this.title = this.selectedNote.title;
+      this.description = this.selectedNote.description;
+    }
+    this.firstTime = false;
   }
 }

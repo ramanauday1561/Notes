@@ -59,7 +59,7 @@
   }
   .body-container {
     display: flex;
-    height: calc(100% - 102px);
+    height: calc(100% - 82px);
     background-color: #F6F6F4;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
@@ -248,7 +248,7 @@
 @media only screen and (max-width : 780px)  {
   .all-notes-container {
     .body-container {
-
+      height: calc(100% - 82px);
     }
   }
 }
