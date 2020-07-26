@@ -153,7 +153,8 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
   private loadPreviousData() {
     if (localStorage.getItem('NotesList')) {
       this.allNotes = JSON.parse(localStorage.getItem('NotesList'));
-      const activeNote = JSON.parse(localStorage.getItem('activeNote'));
+      const activeNoteId = +localStorage.getItem('activeNote');
+      const activeNote = this.allNotes.filter(each => each.id === activeNoteId)[0];
       this.title = activeNote.title;
       this.description = activeNote.description;
       this.notesService.loadPreviousState({

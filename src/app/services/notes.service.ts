@@ -61,7 +61,7 @@ export class NotesService {
       ...this.notesSubject.value,
       currentNode: this.getNotes().sort().filter(each => each.id === id)[0]
     };
-    localStorage.setItem('activeNote', JSON.stringify(cloneState.currentNode));
+    localStorage.setItem('activeNote', String(cloneState.currentNode.id));
     this.notesSubject.next(cloneState);
   }
 
@@ -91,7 +91,7 @@ export class NotesService {
         allNotes: [removedNote, ...removedList.allNotes]
       }
       this.notesSubject.next(addElement);
-    }, 300)
+    }, 30)
   }
 
   deleteNote(id: number) {
