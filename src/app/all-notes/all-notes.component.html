@@ -1,0 +1,77 @@
+<div class="all-notes-container">
+  <div class="header-container">
+    <div class="sidebar-icon icon tooltip"
+         [ngClass]="{'hide-icon': hideIcon}"
+         (click)="toggleSidebar()">
+      <img src="assets/sidebar.png" alt="Sidebar">
+      <span class="tooltip-text">Toggle Sidebar</span>
+    </div>
+    <div class="delete icon tooltip"
+         [ngClass]="{'hide-icon': hideIcon}"
+         (click)="deleteNote()">
+      <img src="assets/delete.png" alt="Delete">
+      <span class="tooltip-text">Delete a Note</span>
+    </div>
+    <div class="new-note icon tooltip"
+         [ngClass]="{'hide-icon': hideIcon}"
+         (click)="addNewNote()">
+      <img src="assets/new.png" alt="New">
+      <span class="tooltip-text">Add a new Note</span>
+    </div>
+    <div class="empty"></div>
+    <div class="search">
+      <img src="assets/search.png" alt="Search">
+      <input [(ngModel)]="searchText"
+             (focus)="inputSearchFocused()"
+             (blur)="inputSearchBlur()"
+             (ngModelChange)="searchFunction($event)"
+             type="text" placeholder="Search for a note">
+    </div>
+  </div>
+  <div class="body-container" *ngIf="allNotes.length > 0">
+    <div class="list-container list-container-media"
+         #overallList
+         [ngClass]="{'hide-sidebar': sidebarStatus === 'close'}">
+      <div class="each-list"
+           [@inOutAnimation]="'in'"
+           [ngClass]="{'active': selectedNote.id === eachNote.id}"
+           (click)="changeActiveState(eachNote)"
+           *ngFor="let eachNote of allNotes">
+        <div class="title">
+          {{eachNote.title}}
+        </div>
+        <div class="time-desc">
+          <div class="time">{{eachNote.time | date: 'MM/dd/yyyy' }}</div>
+          <div class="desc">{{eachNote.description}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="details-container" [ngClass]="{'full-width': sidebarStatus === 'close'}">
+      <div class="time-stamp">
+        {{selectedNote.time | date: 'MMM d y \'at\' hh:mm a'}}
+      </div>
+      <div class="title">
+        <input #titleInput type="text"
+               [(ngModel)]="title"
+               (keyup.enter)="changeFocus()"
+               (blur)="blurCheck()"
+               (ngModelChange)="updateNote($event, 'title')">
+      </div>
+      <div class="description">
+        <textarea #descInput
+                  (blur)="blurCheck()"
+                  [(ngModel)]="description"
+                  (ngModelChange)="updateNote($event, 'description')">
+        </textarea>
+      </div>
+    </div>
+  </div>
+  <div class="no-data-container" *ngIf="allNotes.length === 0">
+    <div class="no-notes">
+      Current no notes to display try adding some.
+    </div>
+    <div class="add-note">
+      Use <img src="assets/new.png" alt="New Note"> to add a new Note
+    </div>
+  </div>
+</div>
