@@ -129,6 +129,8 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
       const notesClone = [...this.allNotesClone];
       this.allNotes = notesClone.filter(each =>
         each.title.toLowerCase().includes($event.toLowerCase()) || each.description.toLowerCase().includes($event.toLowerCase()) );
+    } else {
+      this.allNotes = [...this.allNotesClone];
     }
   }
 
@@ -153,14 +155,16 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
   private loadPreviousData() {
     if (localStorage.getItem('NotesList')) {
       this.allNotes = JSON.parse(localStorage.getItem('NotesList'));
-      const activeNoteId = +localStorage.getItem('activeNote');
-      const activeNote = this.allNotes.filter(each => each.id === activeNoteId)[0];
-      this.title = activeNote.title;
-      this.description = activeNote.description;
-      this.notesService.loadPreviousState({
-        currentNode: activeNote,
-        allNotes: this.allNotes
-      });
+      if (this.allNotes.length > 0) {
+        const activeNoteId = +localStorage.getItem('activeNote');
+        const activeNote = this.allNotes.filter(each => each.id === activeNoteId)[0];
+        this.title = activeNote.title;
+        this.description = activeNote.description;
+        this.notesService.loadPreviousState({
+          currentNode: activeNote,
+          allNotes: this.allNotes
+        });
+      }
     }
   }
 
