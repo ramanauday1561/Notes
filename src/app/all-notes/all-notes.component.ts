@@ -47,6 +47,7 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
   @ViewChild('titleInput') titleInput: ElementRef;
   @ViewChild('descInput') descInput: ElementRef;
   @ViewChild('overallList') overallList: ElementRef;
+  @ViewChild('detailsContainer') detailsContainer: ElementRef;
   hideIcon: boolean;
 
   @HostListener('window:resize', ['$event'])
@@ -68,6 +69,7 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
       this.allNotes = res.allNotes;
       this.allNotesClone = [...res.allNotes];
       this.sidebarStatus = res.sidebarStatus;
+      this.detailsContainerHandler();
       this.assignActiveState();
       saveNotesToStore(this.allNotes);
     });
@@ -103,6 +105,10 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
   changeActiveState(activeNote: Note) {
     this.notesService.updateCurrentNode(activeNote.id);
     this.titleInput.nativeElement.focus();
+    if (this.innerWidth < 400) {
+      this.sidebarStatus = 'close';
+      this.notesService.changeSidebarStatus('close');
+    }
   }
 
   toggleSidebar() {
@@ -175,5 +181,16 @@ export class AllNotesComponent implements OnInit, AfterViewInit {
       this.description = this.selectedNote.description;
     }
     this.firstTime = false;
+  }
+
+  private detailsContainerHandler() {
+    if (this.innerWidth < 400 && this.detailsContainer) {
+      if (this.sidebarStatus === 'open') {
+        this.detailsContainer.nativeElement.style.display = 'none';
+        this.detailsContainer.nativeElement.style.overflow = 'hidden';
+      } else {
+        this.detailsContainer.nativeElement.style.display = 'block';
+      }
+    }
   }
 }

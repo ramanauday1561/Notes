@@ -46,7 +46,7 @@
         </div>
       </div>
     </div>
-    <div class="details-container" [ngClass]="{'full-width': sidebarStatus === 'close'}">
+    <div class="details-container" #detailsContainer [ngClass]="{'full-width': sidebarStatus === 'close'}">
       <div class="time-stamp">
         {{selectedNote.time | date: 'MMM d y \'at\' hh:mm a'}}
       </div>
